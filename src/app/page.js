@@ -29,7 +29,9 @@ import {
   TrendingUp,
   BarChart3,
   Smartphone,
-  Globe
+  Globe,
+  Menu,
+  X
 } from "lucide-react";
 import emailjs from "@emailjs/browser";
 
@@ -75,6 +77,23 @@ export default function LandingPage() {
   const [sending, setSending] = useState(false);
   const [alert, setAlert] = useState({ type: "", message: "" });
   const [activeFeature, setActiveFeature] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close the mobile menu if the user scrolls or touches the page while it's open.
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const handleClose = () => setMobileMenuOpen(false);
+
+    // Close on scroll and touchmove (mobile gestures)
+    window.addEventListener('scroll', handleClose, { passive: true });
+    window.addEventListener('touchmove', handleClose, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleClose);
+      window.removeEventListener('touchmove', handleClose);
+    };
+  }, [mobileMenuOpen]);
 
   const features = [
     {
@@ -272,33 +291,80 @@ export default function LandingPage() {
               className="flex items-center space-x-3"
             >
               <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
-                <Target className="h-6 w-6 text-white" />
+                <Target className="h-3 w-3 md:h-5 md:w-5 text-white" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 DeadlineTracker
               </span>
             </motion.div>
 
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-4">
+              {/* Theme toggle stays visible on all sizes */}
               <ThemeToggle />
-              {isAuthenticated ? (
-                <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                  <Link href="/dashboard/overview">Go to Dashboard</Link>
+
+              {/* Desktop actions */}
+              <div className="hidden md:flex items-center space-x-6">
+                <Button variant="ghost" asChild className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                  <Link href="/support">Support</Link>
                 </Button>
-              ) : (
-                <div className="flex space-x-4">
-                  <Button variant="ghost" asChild className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800">
-                    <Link href="/login">Sign In</Link>
-                  </Button>
+                {isAuthenticated ? (
                   <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                    <Link href="/register">Get Started Free</Link>
+                    <Link href="/dashboard/overview">Go to Dashboard</Link>
                   </Button>
-                </div>
-              )}
+                ) : (
+                  <div className="flex space-x-4">
+                    <Button variant="ghost" asChild className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800">
+                      <Link href="/login">Sign In</Link>
+                    </Button>
+                    <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                      <Link href="/register">Get Started Free</Link>
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile menu toggle */}
+              <div className="md:hidden">
+                <button
+                  aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="p-2 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                >
+                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </nav>
+
+      {/* Mobile menu (small screens) */}
+      {mobileMenuOpen && (
+        // Use fixed positioning and higher z-index so the mobile menu is not clipped by overflow or stacking contexts
+        <div className="md:hidden fixed inset-x-0 top-16 sm:top-16 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-gray-900 dark:text-white">
+            <div className="flex flex-col space-y-3">
+                {isAuthenticated ? (
+                <Button asChild className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                  <Link href="/dashboard/overview" onClick={() => setMobileMenuOpen(false)}>Go to Dashboard</Link>
+                </Button>
+              ) : (
+                <>
+                  <Button variant="ghost" asChild className="w-full text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
+                  </Button>
+                  <Button asChild className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                    <Link href="/register" onClick={() => setMobileMenuOpen(false)}>Get Started Free</Link>
+                  </Button>
+                    <Button asChild className="w-full">
+                      <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="w-full text-left px-3 py-2">Support</Link>
+                    </Button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section */}
       <section className="relative py-20 px-4 sm:px-6 lg:px-8">
@@ -315,7 +381,7 @@ export default function LandingPage() {
                 Trusted by 10,000+ productive teams
               </div>
 
-              <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold leading-tight">
                 <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                   Master Your
                 </span>
@@ -323,24 +389,24 @@ export default function LandingPage() {
                 <span className="text-gray-900 dark:text-white">Deadlines</span>
               </h1>
 
-              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-lg">
+              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-lg text-block">
                 Intelligent deadline management that adapts to your workflow. Never miss important dates again with AI-powered scheduling and smart reminders.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
                 {!isAuthenticated ? (
                   <>
-                    <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-6">
+                    <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-base sm:text-lg px-6 py-3 sm:px-8 sm:py-6 responsive-tight-button">
                       <Link href="/register">
                         Start Free Trial <ChevronRight className="ml-2 h-5 w-5" />
                       </Link>
                     </Button>
-                    <Button variant="outline" asChild size="lg" className="text-lg px-8 py-6 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <Button variant="outline" asChild size="lg" className="text-base sm:text-lg px-6 py-3 sm:px-8 sm:py-6 responsive-tight-button border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800">
                       <Link href="/login">Watch Demo <Play className="ml-2 h-4 w-4" /></Link>
                     </Button>
                   </>
                 ) : (
-                  <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-6">
+                  <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-base sm:text-lg px-6 py-3 sm:px-8 sm:py-6 responsive-tight-button">
                     <Link href="/dashboard/overview">
                       Go to Dashboard <ChevronRight className="ml-2 h-5 w-5" />
                     </Link>
@@ -441,7 +507,7 @@ export default function LandingPage() {
               <Zap className="w-4 h-4 mr-2" />
               Why Choose Us
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-6">
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Powerful Features
               </span>
@@ -468,7 +534,7 @@ export default function LandingPage() {
                   onClick={() => setActiveFeature(index)}
                 >
                   {/* Active indicator bar */}
-                  <div className={`absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-blue-500 to-purple-500 rounded-l-2xl transition-all duration-300 ${activeFeature === index ? 'opacity-100' : 'opacity-0'
+                  <div className={`absolute left-0 top-2 h-[90%] w-1 bg-gradient-to-b from-blue-500 to-purple-500 rounded-l-2xl transition-all duration-300 ${activeFeature === index ? 'opacity-100' : 'opacity-0'
                     }`} />
 
                   <div className="flex items-start space-x-4">
@@ -574,7 +640,7 @@ export default function LandingPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="text-2xl font-bold mb-4 text-gray-900 dark:text-white"
+                    className="text-xl sm:text-2xl font-bold mb-4 text-gray-900 dark:text-white"
                   >
                     {normalizedFeatures[activeFeature].title}
                   </motion.h3>
@@ -585,7 +651,7 @@ export default function LandingPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed max-w-md"
+                    className="text-gray-600 dark:text-gray-300 text-base sm:text-lg leading-relaxed max-w-md"
                   >
                     {normalizedFeatures[activeFeature].description}
                   </motion.p>
@@ -626,7 +692,7 @@ export default function LandingPage() {
               { value: "40%", label: "More Efficient" },
               { value: "24/7", label: "Active Monitoring" },
               { value: "99.9%", label: "Uptime" },
-              { value: "5min", label: "Setup Time" }
+              { value: "1min", label: "Setup Time" }
             ].map((stat, index) => (
               <div key={index} className="text-center p-4 bg-white/50 dark:bg-gray-900/30 rounded-xl border border-gray-200 dark:border-gray-800">
                 <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -683,7 +749,7 @@ export default function LandingPage() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white"
+                  className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white"
                 >
                   Start Managing Your
                   <span className="block bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent">
@@ -696,7 +762,7 @@ export default function LandingPage() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto leading-relaxed"
+                  className="text-base sm:text-xl text-blue-100 mb-10 max-w-2xl mx-auto leading-relaxed"
                 >
                   Join <span className="font-semibold text-white">10,000+</span> users who organize their deadlines completely free.
                   No hidden costs, no trials, no limits.
@@ -711,13 +777,13 @@ export default function LandingPage() {
                 >
                   {!isAuthenticated ? (
                     <>
-                      <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-50 text-lg px-8 py-6 rounded-2xl font-bold shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 group">
+                      <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-50 text-base sm:text-lg px-6 py-3 sm:px-8 sm:py-6 rounded-2xl font-bold shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 group responsive-tight-button">
                         <Link href="/register" className="flex items-center">
                           <span>Get Started Free</span>
                           <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                         </Link>
                       </Button>
-                      <Button asChild variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white/20 text-lg px-8 py-6 rounded-2xl font-semibold backdrop-blur-sm hover:scale-105 transition-all duration-300 group">
+                      <Button asChild variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white/20 text-base sm:text-lg px-6 py-3 sm:px-8 sm:py-6 rounded-2xl font-semibold backdrop-blur-sm hover:scale-105 transition-all duration-300 group responsive-tight-button">
                         <Link href="/login" className="flex items-center">
                           <Play className="mr-2 h-5 w-5" />
                           <span>See How It Works</span>
@@ -725,7 +791,7 @@ export default function LandingPage() {
                       </Button>
                     </>
                   ) : (
-                    <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-50 text-lg px-8 py-6 rounded-2xl font-bold shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 group">
+                    <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-50 text-base sm:text-lg px-6 py-3 sm:px-8 sm:py-6 rounded-2xl font-bold shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 group responsive-tight-button">
                       <Link href="/dashboard/overview" className="flex items-center">
                         <span>Go to Dashboard</span>
                         <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -842,12 +908,12 @@ export default function LandingPage() {
               className="space-y-8"
             >
               <div>
-                <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Get In Touch
-                </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-                  Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
-                </p>
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      Get In Touch
+                    </h2>
+                    <p className="text-base sm:text-xl text-gray-600 dark:text-gray-300 mb-8">
+                      Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+                    </p>
               </div>
 
               <div className="space-y-6">
@@ -887,7 +953,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
             >
-              <Card className="border-0 shadow-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800">
+              <Card className="shadow-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800">
                 <CardContent className="p-8">
                   {alert.message && (
                     <Alert className={`mb-6 ${alert.type === "success" ? "border-green-500" : "border-red-500"}`}>
@@ -896,6 +962,7 @@ export default function LandingPage() {
                     </Alert>
                   )}
                   <form onSubmit={handleSubmit} className="space-y-6">
+                    <h2 className="text-lg md:text-xl font-semibold text-center">Contact Us</h2>
                     <div className="grid md:grid-cols-2 gap-4">
                       <Input
                         name="name"
@@ -935,7 +1002,7 @@ export default function LandingPage() {
                     <Button
                       type="submit"
                       disabled={sending}
-                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-6 text-lg"
+                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-3 sm:py-6 text-base sm:text-lg responsive-tight-button"
                     >
                       <Mail className="w-5 h-5 mr-2" />
                       {sending ? "Sending..." : "Send Message"}
@@ -963,14 +1030,9 @@ export default function LandingPage() {
               © 2025 DeadlineTracker. All rights reserved.
             </div>
             <div className="flex space-x-6">
-              <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                Privacy
-              </Button>
-              <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                Terms
-              </Button>
-              <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                Support
+              
+              <Button asChild variant="ghost" size="sm" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+                <Link href="/support">Support</Link>
               </Button>
             </div>
           </div>

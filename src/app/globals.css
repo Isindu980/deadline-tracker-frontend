@@ -121,6 +121,35 @@
   }
 }
 
+/* Responsive root font-size so rem-based Tailwind utilities scale with viewport size.
+   This makes text, rem paddings/margins and many component sizes more relevant on small screens. */
+html {
+  font-size: 16px; /* default */
+}
+
+@media (max-width: 639px) {
+  /* Mobile: slightly smaller base */
+  html { font-size: 14px; }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  /* Tablets / small desktops */
+  html { font-size: 15px; }
+}
+
+@media (min-width: 1024px) {
+  /* Large screens: default or slightly larger */
+  html { font-size: 16px; }
+}
+
+/* Slight button/padding adjustments on very small screens */
+@layer components {
+  .responsive-tight-button {
+    padding-left: 0.75rem; /* 12px */
+    padding-right: 0.75rem;
+  }
+}
+
 /* Glassmorphism Styles */
 @layer components {
   /* Primary Glassmorphism */

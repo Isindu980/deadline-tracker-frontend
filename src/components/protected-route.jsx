@@ -33,7 +33,7 @@ export function ProtectedRoute({ children }) {
   return children;
 }
 
-export function PublicRoute({ children, redirectTo = '/dashboard' }) {
+export function PublicRoute({ children, redirectTo = '/dashboard/overview' }) {
   const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
 

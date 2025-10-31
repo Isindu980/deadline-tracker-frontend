@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -60,8 +59,7 @@ const ParticlesBackground = () => {
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    rememberMe: false
+    password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -71,61 +69,9 @@ export default function LoginPage() {
   const { setUser, setToken } = useAuth();
   const router = useRouter();
 
-  // Load remembered email on component mount
-  useEffect(() => {
-    const rememberMe = localStorage.getItem('rememberMe');
-    const rememberedEmail = localStorage.getItem('rememberedEmail');
-    
-    if (rememberMe === 'true' && rememberedEmail) {
-      setFormData(prev => ({
-        ...prev,
-        email: rememberedEmail,
-        rememberMe: true
-      }));
-    }
-  }, []);
+  
 
-  // --- users cache helpers (client-side) ---
-  const readUsersCache = () => {
-    try {
-      const raw = localStorage.getItem('users');
-      return raw ? JSON.parse(raw) : [];
-    } catch (err) {
-      console.warn('readUsersCache: failed to parse users cache', err);
-      return [];
-    }
-  };
-
-  const writeUsersCache = (users) => {
-    try {
-      localStorage.setItem('users', JSON.stringify(users));
-    } catch (err) {
-      console.warn('writeUsersCache: failed to write users cache', err);
-    }
-  };
-
-  const addEmailToUsersCache = (email) => {
-    if (!email) return;
-    const users = readUsersCache();
-    const exists = users.find(u => u.email === email);
-    const entry = { email, savedAt: Date.now() };
-    if (exists) {
-      // update timestamp
-      const updated = users.map(u => (u.email === email ? { ...u, savedAt: entry.savedAt } : u));
-      writeUsersCache(updated);
-    } else {
-      users.unshift(entry);
-      // keep recent 10
-      writeUsersCache(users.slice(0, 10));
-    }
-  };
-
-  const removeEmailFromUsersCache = (email) => {
-    if (!email) return;
-    const users = readUsersCache();
-    const filtered = users.filter(u => u.email !== email);
-    writeUsersCache(filtered);
-  };
+  
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -179,31 +125,11 @@ export default function LoginPage() {
         setToken(result.token);
         setUser(result.user);
         
-        // Handle remember me option
-        if (formData.rememberMe) {
-          localStorage.setItem('rememberMe', 'true');
-          localStorage.setItem('rememberedEmail', formData.email);
-          try {
-            addEmailToUsersCache(formData.email);
-          } catch (err) {
-            console.warn('addEmailToUsersCache failed', err);
-          }
-        } else {
-          localStorage.removeItem('rememberMe');
-          localStorage.removeItem('rememberedEmail');
-          try {
-            removeEmailFromUsersCache(formData.email);
-          } catch (err) {
-            console.warn('removeEmailFromUsersCache failed', err);
-          }
-        }
         
         setSuccess('Login successful! Redirecting...');
-        
-        // Add a small delay to show success message
-        setTimeout(() => {
-          router.push('/dashboard/overview');
-        }, 1500);
+
+        // Navigate immediately to dashboard after successful login
+        router.push('/dashboard/overview');
       } else {
         setError(result.error || 'Login failed. Please check your credentials.');
       }
@@ -219,8 +145,7 @@ export default function LoginPage() {
   const handleDemoLogin = () => {
     setFormData({
       email: 'demo@deadlinetracker.com',
-      password: 'demopassword123',
-      rememberMe: false
+      password: 'demopassword123'
     });
     setError('');
     setSuccess('');
@@ -448,40 +373,10 @@ export default function LoginPage() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
-                      className="flex items-center justify-between"
+                      className="flex justify-end"
                     >
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="rememberMe"
-                          name="rememberMe"
-                          checked={formData.rememberMe}
-                          onCheckedChange={(checked) => {
-                            setFormData(prev => ({ ...prev, rememberMe: checked }));
-                            try {
-                              if (checked) {
-                                // add current email to users cache when user checks remember
-                                addEmailToUsersCache(formData.email);
-                              } else {
-                                // remove current email from users cache when unchecked
-                                removeEmailFromUsersCache(formData.email);
-                              }
-                            } catch (err) {
-                              console.warn('rememberMe cache update failed', err);
-                            }
-                          }}
-                          className="glassmorphism data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                          disabled={loading}
-                        />
-                        <label
-                          htmlFor="rememberMe"
-                          className="text-sm font-medium leading-none text-gray-700 dark:text-gray-300 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Remember me
-                        </label>
-                      </div>
-                      
-                      <Link 
-                        href="/forgot-password" 
+                      <Link
+                        href="/forgot-password"
                         className="text-sm text-blue-600 dark:text-blue-400 hover:underline transition-colors"
                       >
                         Forgot password?
@@ -497,6 +392,7 @@ export default function LoginPage() {
                         type="submit" 
                         className="w-full glassmorphism-button bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                         disabled={loading}
+                        onSubmit={handleSubmit}
                         size="lg"
                       >
                         {loading ? (
