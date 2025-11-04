@@ -1,0 +1,62 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Purple rounded-square icon with concentric white rings">
+  <defs>
+    <radialGradient id="bgRadial" cx="50%" cy="35%" r="80%">
+      <stop offset="0%" stop-color="#18002a"/>
+      <stop offset="60%" stop-color="#0f0020"/>
+      <stop offset="100%" stop-color="#090014"/>
+    </radialGradient>
+    <linearGradient id="squareGrad" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#a72bff"/>
+      <stop offset="55%" stop-color="#8a00ff"/>
+      <stop offset="100%" stop-color="#6b00d9"/>
+    </linearGradient>
+    <radialGradient id="innerGlow" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#ff6cff" stop-opacity="0.45"/>
+      <stop offset="40%" stop-color="#c63bff" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#6b00d9" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset in="SourceAlpha" dx="0" dy="30" result="off"/>
+      <feGaussianBlur in="off" stdDeviation="30" result="blur"/>
+      <feBlend in="SourceGraphic" in2="blur" mode="normal"/>
+    </filter>
+    <filter id="ringGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="18" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="innerShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="6" in="SourceAlpha" result="o"/>
+      <feGaussianBlur in="o" stdDeviation="10" result="blur"/>
+      <feComposite in="blur" in2="SourceGraphic" operator="out" result="cut"/>
+      <feColorMatrix in="cut" type="matrix"
+        values="0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 .4 0" result="shadow"/>
+      <feBlend in="SourceGraphic" in2="shadow" mode="multiply"/>
+    </filter>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bgRadial)"/>
+  <g transform="translate(0,0)">
+    <rect x="192" y="192" width="640" height="640" rx="120" ry="120"
+          fill="url(#squareGrad)"
+          filter="url(#dropShadow)"/>
+    <rect x="192" y="192" width="640" height="640" rx="120" ry="120"
+          fill="url(#innerGlow)" opacity="0.85" style="mix-blend-mode: screen"/>
+    <rect x="192" y="192" width="640" height="640" rx="120" ry="120"
+          fill="transparent" filter="url(#innerShadow)"/>
+  </g>
+  <g transform="translate(0,0)" filter="url(#ringGlow)">
+    <circle cx="512" cy="512" r="212" fill="none" stroke="#ffffff" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="512" cy="512" r="132" fill="none" stroke="#ffffff" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="512" cy="512" r="62" fill="none" stroke="#ffffff" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="512" cy="512" r="20" fill="#ffffff"/>
+  </g>
+  <g opacity="0.18">
+    <circle cx="512" cy="512" r="300" fill="#b358ff" />
+    <circle cx="512" cy="512" r="260" fill="#8a00ff" opacity="0.12"/>
+  </g>
+</svg>

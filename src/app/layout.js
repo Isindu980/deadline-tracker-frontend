@@ -16,12 +16,14 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "Deadline Tracker - Stay Organized",
-  // Explicitly provide a favicon image so Next doesn't fall back to the default next.svg
   icons: {
-    // prefer a PNG icon (256x256) — Next will generate the proper favicon route
     icon: [
-      { url: "/logo.png", sizes: "256x256", type: "image/png" }
-    ]
+      { url: '/favicon.ico', type: 'image/x-icon' },
+      { url: '/favicon.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon.svg', type: 'image/svg+xml' }
+    ],
+    shortcut: '/favicon.ico',
+    apple: { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
   },
   description: "Track your deadlines and stay organized with our beautiful deadline management system",
 };
