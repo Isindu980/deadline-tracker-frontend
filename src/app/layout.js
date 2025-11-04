@@ -16,8 +16,12 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "Deadline Tracker - Stay Organized",
+  // Explicitly provide a favicon image so Next doesn't fall back to the default next.svg
   icons: {
-    icon: "/logo.png",
+    // prefer a PNG icon (256x256) — Next will generate the proper favicon route
+    icon: [
+      { url: "/logo.png", sizes: "256x256", type: "image/png" }
+    ]
   },
   description: "Track your deadlines and stay organized with our beautiful deadline management system",
 };
