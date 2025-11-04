@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "Deadline Tracker - Stay Organized",
+  icons: {
+    icon: "/logo.png",
+  },
   description: "Track your deadlines and stay organized with our beautiful deadline management system",
 };
 

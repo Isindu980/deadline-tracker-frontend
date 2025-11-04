@@ -934,7 +934,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900 dark:text-white">Developer</div>
-                    <a href="https://www.isindueshan.me" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-300">Isindu Eshan - Full Stack Developer</a>
+                    <a href="hhttps://isindu-eshan.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-300">Isindu Eshan - Full Stack Developer</a>
                   </div>
                 </div>
 
