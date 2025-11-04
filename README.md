@@ -23,7 +23,7 @@ This README covers how to run the project locally, environment variables require
 - npm (or yarn/pnpm) — examples below use `npm`
 
 ## Local setup (Windows PowerShell)
-Open a PowerShell terminal in the project root (`e:\to-do app\deadline-tracker-frontend`) and run:
+Open a PowerShell terminal in the project root and run:
 
 ```powershell
 npm install
